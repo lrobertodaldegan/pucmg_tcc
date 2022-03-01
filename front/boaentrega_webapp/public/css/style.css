@@ -1,0 +1,123 @@
+/** Generic sets **/
+::-webkit-scrollbar {width: 10px;}
+::-webkit-scrollbar-track {background: #f1f1f1; }
+::-webkit-scrollbar-thumb {background: rgb(223, 223, 223); }
+::-webkit-scrollbar-thumb:hover {background: rgb(172, 172, 172); }
+body{
+    background : rgb(243, 243, 243);
+    margin:0;
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+}
+a{
+    text-decoration: none;
+    color:white;
+}
+i{
+    font-size: 20px;
+    color: gray;
+}
+ul{
+    list-style-type: none;
+    padding:0;
+    height:500px;
+    overflow-y: scroll;
+}
+ul li{
+    padding: 5px 20px;
+}
+ul li:hover{
+    cursor: pointer;
+}
+/** Main sets **/
+#root{
+    padding: 0px 5px;
+    max-height:90%;
+    animation: text-color-change 1.5s 1;
+}
+
+.main-menu{
+    background: rgb(201, 201, 201);
+    bottom: 0;
+    position: fixed;
+    width:100%;
+    height:10%;
+    padding: 0 5px;
+}
+
+.main-menu table{
+    width: 100%;
+    height: 100%;
+}
+
+.main-menu table td{
+    text-align: center; 
+    vertical-align: middle;
+    transition: 0.5s;
+}
+
+.main-menu table td:hover{
+    background:rgb(131, 131, 131);
+}
+
+.big-icons{
+    font-size: 50px !important;
+    color:white !important
+}
+
+.white-circle{
+    background: white;
+    border-radius: 80px;
+    width:fit-content !important;
+    left: 35%;
+    padding:10px;
+}
+.sesssion{
+    text-align: center;
+    width: 80%;
+    margin: 0;
+    position: absolute;
+    top: 5%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.session-options{
+    text-align: center;
+    width: fit-content;
+    margin: 0;
+    position: absolute;
+    top: 0%;
+    right: 5%;
+    font-size: 50px;
+}
+.session-content{
+    margin-top:5%;
+}
+/** Pages sets **/
+/** Home **/
+.welcome{
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    position: absolute;
+    top: 40%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+/** Suppliers **/
+.suppliers-list li{
+    margin: 10px 0;
+    transition: 0.5s;
+    border-radius: 1px;
+}
+.suppliers-list li:hover{
+    background: rgb(211, 211, 211)
+}
+/** Other stuffs **/
+@keyframes text-color-change {
+    0% { color: white; }
+    25% { color: rgb(190, 188, 188); }
+    50% { color: rgb(105, 105, 105); }
+    75% { color: rgb(31, 31, 31); }
+    100% { color: black; }
+}

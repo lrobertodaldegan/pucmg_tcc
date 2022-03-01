@@ -1,0 +1,20 @@
+extends ../layout 
+
+block layout-content 
+
+    .sesssion
+        h1 Fornecedores
+
+    .session-options
+        a(href="#")
+            i.fa-solid(class='fa-plus')
+
+    .session-content
+        ul.suppliers-list 
+            each item in itens  
+                li
+                    =item.name
+                    br
+                    small=`Telefone: ${item.phone}`
+                    br
+                    small=`Endereço: ${item.address} | ${item.zipcode}`
