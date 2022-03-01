@@ -1,0 +1,77 @@
+extends ../../layout 
+
+block layout-content 
+
+    .sesssion
+        h1 Fornecedores
+
+    .session-content
+        .form 
+            form(action="#", method="post")  
+                input(type="hidden", name="id", value=id)
+
+                table
+                    tr 
+                        td 
+                            label Nome da empresa
+                            input(type="text", name="companyName" required, value=companyName)
+
+                        td 
+                            label Documento de identificação (CPF/CNPJ)
+                            input(type="text", name="document" required, value=document)
+
+                    tr 
+                        td 
+                            label Nome Fantasia ou Secundário da empresa
+                            input(type="text", name="TradName", value=tradName)
+
+                        td 
+                            label Tipo de documento
+                            input(type="text", name="docType" required, value=docType)
+
+                    tr 
+                        td 
+                            label Nome do contato
+                            input(type="text", name="contactName" required, value=contactName)
+
+                        td 
+                            label Telefone do contato
+                            input(type="text", name="contactPhone", value=contactPhone)
+                
+                    tr 
+                        td(colspan=2)
+                            label E-mail do contato
+                            input(type="text", name="contactMail" required, value=contactMail)
+                    
+                    tr 
+                        td 
+                            label Telefone de referência da empresa
+                            input(type="tel", name="phone", pattern="[0-9]{11}", value=phone)
+                
+                        td 
+                            label E-mail de referência da empresa
+                            input(type="mail", name="mail" required, value=mail)
+                
+                    tr 
+                        td 
+                            label Endereço da empresa
+                            input(type="text", name="address" required, value=address)
+                
+                        td 
+                            label Número predial
+                            input(type="number", name="addressNumber" required, value=addressNumber)
+                
+                    tr 
+                        td(colspan=2)
+                            label CEP
+                            input(type="number", name="zipcode" required, value=zipcode)
+                
+                    tr
+                        td(colspan=2)
+                            label Complemento do endereço da empresa
+                            textarea(name="addressComplement")
+                                | #{addressComplement}
+
+                    tr 
+                        td.center(colspan=2)
+                            input.btn(type="submit", value="Salvar")

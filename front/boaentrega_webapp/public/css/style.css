@@ -1,12 +1,13 @@
 /** Generic sets **/
-::-webkit-scrollbar {width: 10px;}
+::-webkit-scrollbar {width: 5px;}
 ::-webkit-scrollbar-track {background: #f1f1f1; }
 ::-webkit-scrollbar-thumb {background: rgb(223, 223, 223); }
 ::-webkit-scrollbar-thumb:hover {background: rgb(172, 172, 172); }
 body{
     background : rgb(243, 243, 243);
     margin:0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: scroll;
     font-family: 'Roboto', sans-serif;
 }
 a{
@@ -21,7 +22,6 @@ ul{
     list-style-type: none;
     padding:0;
     height:500px;
-    overflow-y: scroll;
 }
 ul li{
     padding: 5px 20px;
@@ -113,6 +113,47 @@ ul li:hover{
 .suppliers-list li:hover{
     background: rgb(211, 211, 211)
 }
+
+.form{
+    margin-bottom:100px;
+    padding:20px 50px 20px 100px;
+}
+input{
+    height: 32px;
+    margin:2px 0 4px 0;
+}
+textarea:focus, input:focus{
+    outline: none;
+    background-color: rgb(243, 243, 243);
+    border:1px solid rgb(230, 230, 230);
+}
+input, textarea{
+    width:100%;
+    background:rgb(230, 230, 230);
+    border:1px solid rgb(243, 243, 243);
+    border-radius: 10px;
+    transition: 0.5s;
+}
+.btn{
+    height:50px;
+    width:50%;
+    background:rgb(230, 230 ,230);
+    transition: 0.5s;
+}
+.btn:hover{
+    background:rgb(49, 49, 49);
+    color:white;
+    width:70%;
+    cursor:pointer;
+}
+.center{
+    text-align: center;
+}
+
+td{
+    padding: 1px 5px;
+}
+
 /** Other stuffs **/
 @keyframes text-color-change {
     0% { color: white; }
