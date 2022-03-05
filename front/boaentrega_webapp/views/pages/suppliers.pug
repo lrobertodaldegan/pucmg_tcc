@@ -2,19 +2,29 @@ extends ../layout
 
 block layout-content 
 
+    script(src="/js/suppliers.js") 
+
     .sesssion
         h1 Fornecedores
 
     .session-options
-        a(href="/suppliers/form")
+        a(href="/sge/suppliers/form")
             i.fa-solid(class='fa-plus')
 
     .session-content
-        ul.suppliers-list 
-            each item in itens  
-                li
-                    =item.name
+        ul.suppliers-list
+            if retry == true
+                li 
+                    small Carregando...
+
+            each supplier in suppliers  
+                li(onClick="sendInfoToForm(" + supplier.document + ")")
+                    b=supplier.companyName
                     br
-                    small=`Telefone: ${item.phone}`
+                    =`Contato: ${supplier.contactName} (${supplier.contactPhone} | ${supplier.contactMail})`
                     br
-                    small=`Endereço: ${item.address} | ${item.zipcode}`
+                    small=`${supplier.docType}: ${supplier.document}`
+                    br
+                    small=`Telefone: ${supplier.phone} | E-mail: ${supplier.mail}`
+                    br
+                    small=`Endereço: ${supplier.address}, ${supplier.addrNumber} - ${supplier.addrComplement}| ${supplier.zipcode}`

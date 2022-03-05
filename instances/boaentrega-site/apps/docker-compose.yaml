@@ -1,0 +1,36 @@
+version: '3.7'
+
+volumes:
+  boaentrega_data: {}
+
+networks:
+  boaentrega-net:
+    external: true
+
+services:
+  boaentregadb:
+    environment:
+      TZ: "America/Sao_Paulo"
+    image: "boaentregadb"
+    networks:
+      - boaentrega-net
+    ports:
+      - "5432:5432"
+
+  boaentrega_ms_authv:
+    environment:
+      TZ: "America/Sao_Paulo"
+    image: "boaentregams_authv"
+    networks:
+      - boaentrega-net
+    ports:
+      - "9191:9191"
+
+  boaentrega_ms_supplier:
+    environment:
+      TZ: "America/Sao_Paulo"
+    image: "boaentregams_supplier"
+    networks:
+      - boaentrega-net
+    ports:
+      - "9194:9194"

@@ -8,27 +8,6 @@ networks:
     external: true
 
 services:
-  boaentregadb:
-    image: "boaentrega_ms_db"
-    networks:
-      - boaentrega-net
-    ports:
-      - "5432:5432"
-
-  boaentrega_ms_authv:
-    image: "boaentrega/authv"
-    networks:
-      - boaentrega-net
-    ports:
-      - "9191:9191"
-
-  boaentrega_ms_supplier:
-    image: "boaentrega/supplier"
-    networks:
-      - boaentrega-net
-    ports:
-      - "9194:9194"
-
   kong-migrations:
     image: "kong:2.3.2-alpine"
     command: kong migrations bootstrap
@@ -40,6 +19,7 @@ services:
       KONG_PG_HOST: db
       KONG_PG_USER: kong
       KONG_PG_PASSWORD: kong
+      TZ: "America/Sao_Paulo"
     networks:
       - boaentrega-net
     restart: on-failure
@@ -58,6 +38,7 @@ services:
       KONG_PG_HOST: db
       KONG_PG_USER: kong
       KONG_PG_PASSWORD: kong
+      TZ: "America/Sao_Paulo"
     networks:
       - boaentrega-net
     restart: on-failure
@@ -82,6 +63,7 @@ services:
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_PG_PASSWORD: kong
+      TZ: "America/Sao_Paulo"
     networks:
       - boaentrega-net
     ports:
@@ -105,6 +87,7 @@ services:
       POSTGRES_DB: kong
       POSTGRES_USER: kong
       POSTGRES_PASSWORD: kong
+      TZ: "America/Sao_Paulo"
     ports:
       - "5433:5432"
     healthcheck:
@@ -147,6 +130,7 @@ services:
       TOKEN_SECRET: ahfdjgjgf79JKLFHJKh978953kgdfjkl
       DB_DATABASE: konga_db
       NODE_ENV: production
+      TZ: "America/Sao_Paulo"
     depends_on:
       - db
     ports:

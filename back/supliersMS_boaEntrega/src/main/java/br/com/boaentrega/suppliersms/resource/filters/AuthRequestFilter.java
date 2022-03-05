@@ -32,11 +32,13 @@ public class AuthRequestFilter implements ContainerRequestFilter {
 				request.abortWith(Response.status(HttpsStatus.ERROR)
 											.entity(new ErrorResponse(HttpsStatus.ERROR, "Houve um erro ao tentar validar os dados de autenticação!"))
 											.build());
-		}catch(final BusinessException e){
-			request.abortWith(Response.status(e.getCode())
-										.entity(new ErrorResponse(e.getCode(), "Houve um erro ao tentar validar os dados de autenticação: " + e.getMessage()))
+		}catch(final BusinessException be){
+			Log.error(be);
+			request.abortWith(Response.status(be.getCode())
+										.entity(new ErrorResponse(be.getCode(), "Houve um erro ao tentar validar os dados de autenticação: " + be.getMessage()))
 										.build());
 		}catch(final Exception e){
+			Log.error(e);
 			request.abortWith(Response.status(HttpsStatus.ERROR)
 										.entity(new ErrorResponse(HttpsStatus.ERROR, "Houve um erro ao tentar validar os dados de autenticação: " + e.getMessage()))
 										.build());

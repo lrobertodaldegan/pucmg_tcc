@@ -2,14 +2,19 @@
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
-const axiosRequest = require('axios');
+const request = require('request');
 const bodyParser = require('body-parser');
 
 //VARIABLES
 const app = express();
 const port = process.env.PORT || "7070";
+const contextPath = "/sge/";
+const endpointBase = "http://localhost:8000/";
 
-let data = null;
+const validateAuth = (session, res) => {
+    if(!session.jwt)
+        res.redirect(contextPath);
+};
 
 //CONFIGURATION
 app.set("views", path.join(__dirname, "views"));
@@ -19,122 +24,159 @@ app.use(session({secret: 'boaEntregaTcc', resave: false, saveUninitialized: fals
 app.use(bodyParser.urlencoded({extended: false}));
 
 //ROUTES
-app.get("/", (req, res) => res.render("pages/home", {title: "Home"}));
-app.get("/clients", (req, res) => res.render("pages/clients", {title: "Clientes"}));
-app.get("/stores", (req, res) => res.render("pages/stores", {title: "Estoque"}));
-app.get("/settings", (req, res) => res.render("pages/settings", {title: "Configurações"}));
-app.get("/suppliers", (req, res) => {
-    //TODO integrar com API
-    data = {
-        title: "Fornecedores",
-        itens:[
-            {
-                code: 75949858,
-                name: "Lucas",
-                address: "Rua Rio Japurá, 415 - Bloco 10 Apartamento 42 - Roça Grande - Colombo/PR",
-                phone: "+5541995429288",
-                zipcode: "83403350" 
-            },
-            {
-                code: 75949858,
-                name: "Roberto",
-                address: "Rua Rio Japurá, 415 - Bloco 10 Apartamento 42 - Roça Grande - Colombo/PR",
-                phone: "",
-                zipcode: "83403350"
-            },
+app.get(contextPath, (req, res) => res.render("pages/login", {title: "Login"}));
+app.get(contextPath + "login-process", (req, res) => res.render("login_process"));
+app.get(contextPath + "login/:jwt", (req, res) => {
+    let jwt = req.params.jwt;
 
-            {
-                code: 75949858,
-                name: "Lucas",
-                address: "Rua Rio Japurá, 415 - Bloco 10 Apartamento 42 - Roça Grande - Colombo/PR",
-                phone: "+5541995429288",
-                zipcode: "83403350" 
-            },
-            {
-                code: 75949858,
-                name: "Roberto",
-                address: "Rua Rio Japurá, 415 - Bloco 10 Apartamento 42 - Roça Grande - Colombo/PR",
-                phone: "",
-                zipcode: "83403350"
-            },
-            {
-                code: 75949858,
-                name: "Lucas",
-                address: "Rua Rio Japurá, 415 - Bloco 10 Apartamento 42 - Roça Grande - Colombo/PR",
-                phone: "+5541995429288",
-                zipcode: "83403350" 
-            },
-            {
-                code: 75949858,
-                name: "Roberto",
-                address: "Rua Rio Japurá, 415 - Bloco 10 Apartamento 42 - Roça Grande - Colombo/PR",
-                phone: "",
-                zipcode: "83403350"
-            },
-            {
-                code: 75949858,
-                name: "Lucas",
-                address: "Rua Rio Japurá, 415 - Bloco 10 Apartamento 42 - Roça Grande - Colombo/PR",
-                phone: "+5541995429288",
-                zipcode: "83403350" 
-            },
-            {
-                code: 75949858,
-                name: "Roberto",
-                address: "Rua Rio Japurá, 415 - Bloco 10 Apartamento 42 - Roça Grande - Colombo/PR",
-                phone: "",
-                zipcode: "83403350"
-            },
-            
-        ]
+    if(!jwt){
+        req.session.error = "Não foi possível encontrar o token de autenticação do usuário!";
+
+        res.redirect(contextPath);
+    } else {
+        req.session.jwt = jwt;
+
+        res.redirect(contextPath + "home");
+    }
+});
+app.get(contextPath + "home", (req, res) => {
+    validateAuth(req.session, res);
+
+    res.render("pages/home", {title: "Home"});
+});
+app.get(contextPath + "clients", (req, res) => {
+    validateAuth(req.session, res);
+
+    res.render("pages/clients", {title: "Clientes"});
+});
+app.get(contextPath + "stores", (req, res) => {
+    validateAuth(req.session, res);
+
+    res.render("pages/stores", {title: "Estoque"});
+});
+app.get(contextPath + "settings", (req, res) => {
+    validateAuth(req.session, res);
+    
+    res.render("pages/settings", {title: "Configurações"})
+});
+app.get(contextPath + "suppliers", (req, res) => {
+    validateAuth(req.session, res);
+
+    let requestData = {
+        headers: {
+            'content-type' : 'application/json',
+            'Authorization': `Bearer ${req.session.jwt}`
+        },
+        url: endpointBase + "/supplier/v1/"
     };
 
-    res.render("pages/suppliers", data)
-});
-app.get("/suppliers/form", (req, res) => {
-    let obj = null;
+    console.log(req.session.jwt);
 
-    if(req.query.id != null){
-        data.suppliers.forEach((item) => {
-            if(item.id == req.query.id){
-                obj = item;
-                return;
-            }
-        });
-    }
+    request.get(requestData, (err, response, body) => {
+        let result = JSON.parse(body);
 
-    res.render("pages/form/suppliers", obj);
-});
-app.post("/suppliers/save", (req, res) => {
-    let obj = req.body;
-    let itsNotOk = false;
-
-    if(obj != null){
-        if(obj.exists){
-            axiosRequest.patch("url", obj)
-                        .catch((err) => {
-                            console.error(err);
-                            itsNotOk = true;
-                        });
+        if(Array.isArray(result)) {
+            res.render("pages/suppliers", {title: "Fornecedores", suppliers: result});
         } else {
-            axiosRequest.post("url", obj)
-                        .catch((err) => {
-                            console.error(err);
-                            itsNotOk = true;
-                        });
+            //retry...
+            request.get(requestData, (err, response, body) => {
+                let result = JSON.parse(body);
+        
+                if(Array.isArray(result))
+                    res.render("pages/suppliers", {title: "Fornecedores", suppliers: result});
+                else
+                    res.render("pages/suppliers", {title: "Fornecedores", suppliers: []});
+            });
+
+        }
+    });
+});
+app.get(contextPath + "suppliers/form", (req, res) => {
+    validateAuth(req.session, res);
+
+    if(req.query.document){
+        let requestData = {
+            headers: {
+                'content-type' : 'application/json',
+                'Authorization': `Bearer ${req.session.jwt}`
+            },
+            url: endpointBase + "/supplier/v1/" + req.query.document
+        };
+
+        request.get(requestData, (err, response, body) => {
+            let result = JSON.parse(body);
+    
+            res.render("pages/form/suppliers", {title: "Fornecedor", supplier: result});
+        });
+    } else {
+        res.render("pages/form/suppliers", {title: "Novo Fornecedor", supplier: {}});
+    }
+});
+app.post(contextPath + "suppliers/save", (req, res) => {
+    let obj = req.body;
+
+    if(obj){
+        if(obj.id && obj.id != ""){
+            let requestData = {
+                headers: {
+                    'content-type' : 'application/json',
+                    'Authorization': `Bearer ${req.session.jwt}`
+                },
+                body: JSON.stringify(obj),
+                url: endpointBase + "supplier/v1/"
+            };
+
+            request.patch(requestData, (err, response, body) => {
+                console.log('Response enviado ao tentar atualizar:');
+                console.log(JSON.stringify(obj));
+                console.log('Response obtido ao tentar atualizar: ');
+                console.log(body);
+
+                if(err) {
+                    req.session.error = "Houve um erro ao tentar salvar a operação. Tente novamente mais tarde!";
+                    res.redirect(contextPath + "error");
+                } else { 
+                    res.redirect(contextPath + "suppliers");
+                }
+            });
+        } else {
+            obj.id = null;
+
+            let requestData = {
+                headers: {
+                    'content-type' : 'application/json',
+                    'Authorization': `Bearer ${req.session.jwt}`
+                },
+                body: JSON.stringify(obj),
+                url: endpointBase + "supplier/v1/"
+            };
+
+            request.post(requestData, (err, response, body) => {
+                console.log('Response enviado ao tentar salvar:');
+                console.log(JSON.stringify(obj));
+                console.log('Response obtido ao tentar salvar: ');
+                console.log(response.status);
+                console.log(body);
+
+                if(err) {
+                    req.session.error = "Houve um erro ao tentar salvar a operação. Tente novamente mais tarde!";
+                    res.redirect(contextPath + "error");
+                } else { 
+                    res.redirect(contextPath + "suppliers");
+                }
+            });
         }
     }
+});
 
-    if(itsNotOk) {
-        req.session.error = "Houve um erro ao tentar salvar a operação. Tente novamente mais tarde!";
-        res.redirect("/error");
-    } else { 
-        res.redirect("/suppliers");
-    }
+app.get(contextPath + "logout", (req, res) => {
+    req.session.regenerate((err) => console.error(err));
+
+    res.redirect(contextPath);
 });
 
 //Generic error route
-app.all('/error', (req, res) => {
+app.all(contextPath + 'error', (req, res) => {
     let msg = req.session.error;
 
     res.status(500).render('pages/error', {
@@ -152,6 +194,4 @@ app.all('*', (req, res) => {
 });
 
 //SERVER ACTIVATION
-app.listen(port, () => {
-    console.log(`Rodando na porta ${port}`);
-});
+app.listen(port, () => console.log(`Rodando na porta ${port}`));

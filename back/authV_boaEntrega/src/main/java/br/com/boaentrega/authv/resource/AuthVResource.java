@@ -11,8 +11,6 @@ import javax.ws.rs.core.Response.Status;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -35,6 +33,12 @@ public class AuthVResource {
     @ConfigProperty(name = "app.aws.cognito.userPool")
     String awsUserPoolId;
 
+    @ConfigProperty(name = "app.validation.retries")
+    int retries;
+
+    @ConfigProperty(name = "app.validation.interval")
+    int interval;
+
     @POST
     @Path("/validate")
     public Response validate(@HeaderParam("Authorization") String authorization) {
@@ -45,13 +49,36 @@ public class AuthVResource {
         RSAKeyProvider keyProvider = new AwsCognitoKeyProvider(awsCognitoRegion, awsUserPoolId);
         
         Algorithm algorithm = Algorithm.RSA256(keyProvider);
+                  
+        Response res = doValidation(token, JWT.require(algorithm)
+                                                .acceptLeeway(5l)
+                                                .withClaim(CLIENT_ID, clientId)
+                                                .build());
         
-        JWTVerifier jwtVerifier = JWT.require(algorithm)
-                                        .acceptLeeway(5l)
-                                        .withClaim(CLIENT_ID, clientId)
-                                        .build();
+        if(res.getStatus() != 200){
+            for(int i=0; i < retries; i++){
+                try{
+                    res = doValidation(token, JWT.require(algorithm)
+                                                    .acceptLeeway(5l)
+                                                    .withClaim(CLIENT_ID, clientId)
+                                                    .build());
+                    
+                    if(res.getStatus() == 200)
+                        break;
+                    
+                    Thread.sleep(interval);
+                }catch(final Exception e){
+                    Log.error("Houve um problema inesperado!!!", e);
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private Response doValidation(final String token, JWTVerifier verifier){
         try{
-            jwtVerifier.verify(token);
+            verifier.verify(token);
 
             Log.info(String.format("Token (%s) validado com sucesso!", token));
 

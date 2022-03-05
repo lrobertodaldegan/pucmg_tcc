@@ -122,3 +122,5 @@ INSERT INTO prod_catalog_tb VALUES(
     0.1,
     'true'
 );
+
+CREATE SEQUENCE hibernate_sequence START 2;

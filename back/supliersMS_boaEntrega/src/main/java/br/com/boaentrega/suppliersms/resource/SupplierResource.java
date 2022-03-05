@@ -2,6 +2,7 @@ package br.com.boaentrega.suppliersms.resource;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
@@ -13,6 +14,8 @@ import javax.ws.rs.core.Response;
 import br.com.boaentrega.suppliersms.exception.BusinessException;
 import br.com.boaentrega.suppliersms.exception.ExceptionCodeEn;
 import br.com.boaentrega.suppliersms.model.Supplier;
+import io.quarkus.hibernate.orm.panache.Panache;
+import io.quarkus.logging.Log;
 
 @Path("/supplier/v1/")
 public class SupplierResource {
@@ -39,6 +42,7 @@ public class SupplierResource {
     }
     
     @POST
+    @Transactional
     public Response add(final Supplier supplier){
         try{
             if(supplier == null)
@@ -48,13 +52,16 @@ public class SupplierResource {
 
             return Response.status(201).entity(supplier).build();
         } catch(final BusinessException e){
+            Log.error(e);
             return Response.status(e.getCode()).entity(e).build();
         } catch(final Exception ge){
+            Log.error(ge);
             return Response.serverError().build();
         }
     }
 
     @PATCH
+    @Transactional
     public Response update(final Supplier supplier){
         try{
             if(supplier == null)
@@ -65,18 +72,21 @@ public class SupplierResource {
             if(target == null)
                 throw new BusinessException(ExceptionCodeEn.NOT_FOUND);
 
-            supplier.persist();
+            Panache.getEntityManager().merge(supplier);
 
             return Response.ok().build();
         } catch(final BusinessException e){
+            Log.error(e);
             return Response.status(e.getCode()).entity(e).build();
         } catch(final Exception ge){
+            Log.error(ge);
             return Response.serverError().build();
         }
     }
 
     @DELETE
     @Path("{id}")
+    @Transactional
     public Response delete(@PathParam("id") Integer supplierId){
         try{
             if(supplierId == null)
@@ -87,8 +97,10 @@ public class SupplierResource {
 
             return Response.ok().build();
         } catch(final BusinessException e){
+            Log.error(e);
             return Response.status(e.getCode()).entity(e).build();
         } catch(final Exception ge){
+            Log.error(ge);
             return Response.serverError().build();
         }
     }

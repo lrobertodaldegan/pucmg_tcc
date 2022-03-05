@@ -1,0 +1,1 @@
+START /B npm run dev > boaentrega_webapp.log

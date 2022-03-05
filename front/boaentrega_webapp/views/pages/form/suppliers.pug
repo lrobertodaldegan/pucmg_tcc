@@ -7,70 +7,70 @@ block layout-content
 
     .session-content
         .form 
-            form(action="#", method="post")  
-                input(type="hidden", name="id", value=id)
+            form(action="/sge/suppliers/save", method="post")  
+                input(style="visibility:hidden", type="number", name="id", value=supplier.id)
 
                 table
                     tr 
                         td 
                             label Nome da empresa
-                            input(type="text", name="companyName" required, value=companyName)
+                            input(type="text", name="companyName" required, value=supplier.companyName)
 
                         td 
                             label Documento de identificação (CPF/CNPJ)
-                            input(type="text", name="document" required, value=document)
+                            input(type="text", name="document" required, value=supplier.document)
 
                     tr 
                         td 
                             label Nome Fantasia ou Secundário da empresa
-                            input(type="text", name="TradName", value=tradName)
+                            input(type="text", name="tradingName", value=supplier.tradingName)
 
                         td 
                             label Tipo de documento
-                            input(type="text", name="docType" required, value=docType)
+                            input(type="text", name="docType" required, value=supplier.docType)
 
                     tr 
                         td 
                             label Nome do contato
-                            input(type="text", name="contactName" required, value=contactName)
+                            input(type="text", name="contactName" required, value=supplier.contactName)
 
                         td 
                             label Telefone do contato
-                            input(type="text", name="contactPhone", value=contactPhone)
+                            input(type="text", name="contactPhone", value=supplier.contactPhone)
                 
                     tr 
                         td(colspan=2)
                             label E-mail do contato
-                            input(type="text", name="contactMail" required, value=contactMail)
+                            input(type="text", name="contactMail" required, value=supplier.contactMail)
                     
                     tr 
                         td 
                             label Telefone de referência da empresa
-                            input(type="tel", name="phone", pattern="[0-9]{11}", value=phone)
+                            input(type="tel", name="phone", value=supplier.phone)
                 
                         td 
                             label E-mail de referência da empresa
-                            input(type="mail", name="mail" required, value=mail)
+                            input(type="mail", name="mail" required, value=supplier.mail)
                 
                     tr 
                         td 
                             label Endereço da empresa
-                            input(type="text", name="address" required, value=address)
+                            input(type="text", name="address" required, value=supplier.address)
                 
                         td 
                             label Número predial
-                            input(type="number", name="addressNumber" required, value=addressNumber)
+                            input(type="number", name="addrNumber" required, value=supplier.addrNumber)
                 
                     tr 
                         td(colspan=2)
                             label CEP
-                            input(type="number", name="zipcode" required, value=zipcode)
+                            input(type="text", name="zipcode" required, value=supplier.zipcode)
                 
                     tr
                         td(colspan=2)
                             label Complemento do endereço da empresa
-                            textarea(name="addressComplement")
-                                | #{addressComplement}
+                            textarea(name="addrComplement")
+                                | #{supplier.addrComplement}
 
                     tr 
                         td.center(colspan=2)
