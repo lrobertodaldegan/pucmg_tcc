@@ -8,12 +8,14 @@ const bodyParser = require('body-parser');
 //VARIABLES
 const app = express();
 const port = process.env.PORT || "7070";
-const contextPath = "/sge/";
+const contextPath = "/gsl/";
 const endpointBase = "http://localhost:8000/";
 
 const validateAuth = (session, res) => {
-    if(!session.jwt)
+    if(!session.jwt){
+        console.log("Ops! Houve uma tentativa de acessar uma página restrita por um usuário não authorizado ou não autenticado! Redirecionando para a página de login!");
         res.redirect(contextPath);
+    }
 };
 
 //CONFIGURATION
@@ -28,6 +30,8 @@ app.get(contextPath, (req, res) => res.render("pages/login", {title: "Login"}));
 app.get(contextPath + "login-process", (req, res) => res.render("login_process"));
 app.get(contextPath + "login/:jwt", (req, res) => {
     let jwt = req.params.jwt;
+
+    console.log(jwt);
 
     if(!jwt){
         req.session.error = "Não foi possível encontrar o token de autenticação do usuário!";
@@ -167,6 +171,38 @@ app.post(contextPath + "suppliers/save", (req, res) => {
             });
         }
     }
+});
+app.post(contextPath + "suppliers/load-export", (req, res) => {
+    const xl = require('excel4node');
+    const wb = new xl.Workbook();
+    const ws = wb.addWorksheet('Worksheet Name');
+    
+    let data = req.body;
+    
+    const headingColumnNames = [
+        "Nome",
+        "Email",
+        "Celular",
+    ]
+    
+    let headingColumnIndex = 1; //diz que começará na primeira linha
+    headingColumnNames.forEach(heading => { //passa por todos itens do array
+        // cria uma célula do tipo string para cada título
+        ws.cell(1, headingColumnIndex++).string(heading);
+    });
+    
+    let rowIndex = 2;
+
+    data.forEach(record => {
+        let columnIndex = 1;
+        Object.keys(record).forEach(columnName =>{
+            ws.cell(rowIndex,columnIndex++).string(record [columnName])
+        });
+        rowIndex++;
+    }); 
+    
+    
+    wb.write(path.join(__dirname, "public", "export") + 'data.xlsx');
 });
 
 app.get(contextPath + "logout", (req, res) => {

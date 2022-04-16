@@ -8,7 +8,9 @@ block layout-content
         h1 Fornecedores
 
     .session-options
-        a(href="/sge/suppliers/form")
+        i.fa(class='fa-file-excel-o', onclick=`exportData(${JSON.stringify(suppliers)})`)
+
+        a(href="/gsl/suppliers/form")
             i.fa-solid(class='fa-plus')
 
     .session-content
